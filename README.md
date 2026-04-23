@@ -1,6 +1,7 @@
-# postman-mcp
+# aref-postman-mcp
 
-Servidor **MCP (Model Context Protocol)** escrito en Rust que expone la [API REST de Postman](https://www.postman.com/postman/postman-public-workspace/) como un conjunto de *tools* que cualquier agente de IA compatible con MCP (GitHub Copilot, Claude, Cursor, etc.) puede invocar directamente desde el IDE.
+Servidor **MCP (Model Context Protocol)** escrito en Rust que expone la [API REST de Postman](https://www.postman.com/postman/postman-public-workspace/) como un conjunto de *tools* que cualquier agente de IA compatible con MCP (GitHub Copilot, Claude, Cursor, etc.) puede invocar directamente desde el IDE. Permite el uso de funciones que el psotman oficila no tiene como
+el crud de requests individuales
 
 ---
 
