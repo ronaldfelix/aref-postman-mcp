@@ -1,9 +1,5 @@
-//! # utils::executor
-//!
-//! Este módulo es el corazón del runner local: prepara la URL, resuelve variables,
-//! aplica autenticación y envía la petición HTTP real. Está desacoplado de cualquier
-//! tool MCP concreta para que tanto [`ExecuteRequestTool`] como [`RunCollectionLocalTool`]
-//! puedan reutilizarlo
+//! Runner local: prepara URL, resuelve variables, aplica auth y ejecuta el request HTTP real.
+//! Reutilizado por `ExecuteRequestTool` y `RunCollectionLocalTool`.
 
 use std::collections::HashMap;
 use std::time::Instant;
@@ -17,42 +13,28 @@ use crate::utils::vars::resolve_vars;
 /// Resultado de ejecutar un único request de una colección.
 #[derive(Debug)]
 pub struct SingleRunResult {
-    /// Nombre del item en Postman.
     pub name: String,
-    /// Método HTTP usado (`GET`, `POST`, etc.).
     pub method: String,
-    /// URL final (con variables ya resueltas).
     pub url: String,
-    /// Código de status HTTP (0 si hubo error de red).
     pub status: u16,
-    /// Texto del status HTTP (`OK`, `Not Found`, etc.).
     pub status_text: String,
-    /// Tiempo de respuesta en milisegundos.
     pub elapsed_ms: u128,
-    /// `true` si el status es 2xx.
     pub passed: bool,
-    /// Cuerpo de la respuesta (posiblemente truncado).
     pub response_body: String,
-    /// `true` si el body fue truncado por `max_body`.
     pub body_truncated: bool,
-    /// Tamaño total del body en caracteres (antes del truncado).
     pub body_total_chars: usize,
-    /// Headers enviados en el request (para depuración).
     pub request_headers_sent: String,
-    /// Headers clave de la respuesta (content-type, content-length, location…).
     pub response_headers: String,
-    /// Error de red u otro error de construcción del request (`None` si fue OK).
     pub error: Option<String>,
 }
 
-/// Ejecuta un [`CollectionItem`] que debe ser un request (no una carpeta).
-/// # Arguments
+/// Ejecuta un [`CollectionItem`] que sea un request (no una carpeta).
 ///
-/// * `http_client`     – Cliente HTTP ya construido (sin API key de Postman).
+/// * `http_client`     – Cliente HTTP sin API key de Postman.
 /// * `item`            – Item con el request a ejecutar.
-/// * `all_vars`        – Variables resueltas (colección + entorno, en ese orden de prioridad).
-/// * `collection_auth` – Auth a nivel colección (fallback cuando el request usa `noauth`).
-/// * `max_body`        – Límite de caracteres del body de respuesta. `0` = sin límite.
+/// * `all_vars`        – Variables resueltas (colección + entorno).
+/// * `collection_auth` – Auth de colección, usado como fallback si el request usa `noauth`.
+/// * `max_body`        – Límite de chars del body de respuesta (`0` = sin límite).
 pub async fn execute_item(
     http_client: &reqwest::Client,
     item: &CollectionItem,
@@ -207,7 +189,7 @@ pub async fn execute_item(
     }
 }
 
-/// Aplica el body al builder según el modo configurado en Postman.
+/// Aplica el body al builder según el modo configurado en Postman (raw, urlencoded, formdata, graphql).
 fn apply_body(
     mut builder: reqwest::RequestBuilder,
     body: &serde_json::Value,
@@ -289,7 +271,7 @@ fn apply_body(
     builder
 }
 
-/// Construye un resultado de error (sin llegar a enviar el request).
+/// Construye un [`SingleRunResult`] de error sin llegar a enviar el request.
 fn err_result(name: &str, method: &str, url: &str, msg: &str) -> SingleRunResult {
     SingleRunResult {
         name: name.to_string(),

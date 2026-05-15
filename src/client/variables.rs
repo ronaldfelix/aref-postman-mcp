@@ -1,5 +1,3 @@
-//! # client::variables
-//!
 //! Variables globales de workspace y variables locales de colección.
 
 use anyhow::{Result, anyhow};
@@ -7,12 +5,11 @@ use anyhow::{Result, anyhow};
 use super::{PostmanApiClient, POSTMAN_API_BASE};
 
 impl PostmanApiClient {
-    /// Actualiza el array `variable` de una colección (PATCH parcial).
-    /// # Arguments
+    /// Actualiza el array `variable` de una colección (PATCH). Requiere la lista completa de variables.
     ///
     /// * `collection_id` – UID de la colección a actualizar.
     /// * `name`          – Nombre actual de la colección (requerido en `info`).
-    /// * `_postman_id`   – `_postman_id` interno (reservado para futuras versiones).
+    /// * `_postman_id`   – ID interno de Postman (reservado).
     /// * `variables`     – Lista completa de variables en formato JSON.
     pub async fn update_collection_variables(
         &self,
@@ -60,15 +57,7 @@ impl PostmanApiClient {
     }
 
     /// Obtiene el UID del workspace activo.
-    ///
-    /// Orden de resolución:
-    /// 1. Variable de entorno `POSTMAN_WORKSPACE_ID` (permite seleccionar un workspace
-    ///    específico en cuentas con múltiples workspaces).
-    /// 2. Primer elemento del array `/workspaces` devuelto por la API (índice `0`
-    ///    en JSON Pointer, es decir el primero de la lista — no el más importante).
-    ///
-    /// Si tienes más de un workspace y las variables globales van al incorrecto,
-    /// añade `POSTMAN_WORKSPACE_ID=<uid>` a las variables de entorno del servidor.
+    /// Usa `POSTMAN_WORKSPACE_ID` si está definida; si no, toma el primer workspace de la API.
     async fn workspace_id(&self) -> Result<String> {
         if let Ok(id) = std::env::var("POSTMAN_WORKSPACE_ID") {
             if !id.is_empty() {

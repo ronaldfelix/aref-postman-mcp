@@ -1,5 +1,3 @@
-//! # client::environments
-//!
 //! Operaciones de lectura y actualización de entornos Postman.
 
 use anyhow::Result;
@@ -23,12 +21,7 @@ impl PostmanApiClient {
         .await
     }
 
-    /// Reemplaza el conjunto completo de variables de un entorno
-    ///
-    /// La API de Postman requiere enviar TODAS las variables en el PUT; el
-    /// llamador es responsable de construir la lista completa ya fusionada.
-    ///
-    /// # Arguments
+    /// Reemplaza todas las variables de un entorno (PUT total). Requiere la lista completa ya fusionada.
     ///
     /// * `environment_id` – UID del entorno a actualizar.
     /// * `name`           – Nombre actual del entorno (requerido por la API).

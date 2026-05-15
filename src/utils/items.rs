@@ -1,15 +1,8 @@
-//! # utils::items
-//!
 //! Helpers para navegar árboles de [`CollectionItem`] de Postman.
-//!
-//! Las funciones de este módulo operan únicamente sobre los modelos del dominio
-//! y son reutilizables por cualquier tool que necesite recorrer una colección.
 
 use crate::models::collection::CollectionItem;
 
-/// Busca recursivamente un request por nombre (insensible a mayúsculas).
-///
-/// Devuelve `None` si no existe ningún item con ese nombre y tipo request.
+/// Busca recursivamente un request por nombre (insensible a mayúsculas). Devuelve `None` si no existe.
 pub fn find_request_by_name<'a>(
     items: &'a [CollectionItem],
     name: &str,
@@ -42,11 +35,8 @@ pub fn list_request_names(items: &[CollectionItem]) -> Vec<String> {
     names
 }
 
-/// Genera una representación textual indentada del árbol de items de una colección.
-///
+/// Genera una representación textual indentada del árbol de items.
 /// Las carpetas se prefijan con `[folder]` y los requests con `[METHOD]`.
-///
-/// # Arguments
 ///
 /// * `items` – Slice de items del nivel actual.
 /// * `depth` – Profundidad de indentación (cada nivel añade dos espacios).
@@ -74,10 +64,7 @@ pub fn summarize_items(items: &[CollectionItem], depth: usize) -> String {
         .join("\n")
 }
 
-/// Recopila recursivamente todos los items que son requests (excluye carpetas),
-/// respetando el orden en que aparecen en la colección.
-///
-/// Útil para el runner local que necesita ejecutar TODOS los requests en orden.
+/// Recopila recursivamente todos los items que son requests (excluye carpetas), en orden.
 pub fn collect_requests(items: &[CollectionItem]) -> Vec<&CollectionItem> {
     let mut result = Vec::new();
     for item in items {

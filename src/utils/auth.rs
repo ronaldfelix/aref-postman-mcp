@@ -1,8 +1,5 @@
-//! # utils::auth
-//!
 //! Aplicación de esquemas de autenticación Postman sobre un [`reqwest::RequestBuilder`].
-//!
-//! Soporta: `basic`, `bearer`, `apikey` (header / query), `digest` (tratado como basic).
+//! Soporta: `basic`, `bearer`, `apikey` (header/query) y `digest`.
 
 use std::collections::HashMap;
 
@@ -16,20 +13,17 @@ use crate::utils::vars::resolve_vars;
 pub struct AuthResult {
     /// Builder con cabeceras/query de auth ya aplicados.
     pub builder: RequestBuilder,
-    /// Parámetro de query extra para `apikey` con `in=query`.
+    /// Par `(key, value)` de query para `apikey` con `in=query`.
     pub apikey_query: Option<(String, String)>,
 }
 
 /// Aplica el objeto `auth` de Postman sobre `builder`, resolviendo variables con `vars`.
+/// Si `auth` es `None` o `"noauth"`, devuelve el builder sin modificar.
 ///
-/// Si `auth` es `None` o su tipo es `"noauth"`, devuelve el builder sin modificar.
-///
-/// # Arguments
-///
-/// * `builder`          – Builder HTTP en construcción.
-/// * `auth`             – Objeto de autenticación extraído de la colección o del request.
-/// * `collection_auth`  – Auth a nivel colección (fallback si el request usa `"noauth"`).
-/// * `vars`             – Mapa de variables ya resueltas.
+/// * `builder`         – Builder HTTP en construcción.
+/// * `request_auth`    – Auth del request (puede ser `None` o `"noauth"`).
+/// * `collection_auth` – Auth de la colección, usado como fallback.
+/// * `vars`            – Mapa de variables ya resueltas.
 pub fn apply_auth(
     mut builder: RequestBuilder,
     request_auth: Option<&serde_json::Value>,

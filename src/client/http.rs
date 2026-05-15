@@ -1,10 +1,4 @@
-//! # client::http
-//!
-//! Capa HTTP base: inyecta la API key, verifica el status y deserializa.
-//!
-//! El método [`PostmanApiClient::send`] es el único punto de salida de red del
-//! cliente; todos los métodos de dominio lo invocan para evitar repetir la
-//! lógica de error.
+//! Capa HTTP base: inyecta `x-api-key`, verifica el status y deserializa la respuesta.
 
 use anyhow::{Context, Result};
 use serde::de::DeserializeOwned;
@@ -12,10 +6,7 @@ use serde::de::DeserializeOwned;
 use super::PostmanApiClient;
 
 impl PostmanApiClient {
-    /// Envía una petición HTTP, inyecta `x-api-key` y deserializa la respuesta.
-    /// # Type parameters
-    ///
-    /// * `T` – Tipo al que se deserializa el cuerpo JSON de la respuesta.
+    /// Envía una petición HTTP, inyecta `x-api-key` y deserializa la respuesta en `T`.
     pub(super) async fn send<T>(&self, req: reqwest::RequestBuilder) -> Result<T>
     where
         T: DeserializeOwned,

@@ -1,7 +1,4 @@
-//! # tools::environments
-//!
-//! Tools MCP de solo lectura para entornos Postman:
-//! [`ListEnvironmentsTool`] y [`GetEnvironmentTool`].
+//! Tools MCP de solo lectura para entornos Postman: `list_environments` y `get_environment`.
 
 use std::borrow::Cow;
 
@@ -14,30 +11,22 @@ use serde::{Deserialize, Serialize};
 use crate::server::PostmanServer;
 use crate::utils::errors::to_internal_err;
 
-/// Tool MCP que lista todos los entornos del workspace.
+/// Tool que lista todos los entornos del workspace.
 pub struct ListEnvironmentsTool;
 
-/// Parámetros de entrada para `list_environments` (no requiere ninguno).
 #[derive(Debug, Deserialize, JsonSchema, Default)]
 pub struct ListEnvironmentsInput {}
 
-/// Respuesta de `list_environments`.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct ListEnvironmentsOutput {
-    /// Número total de entornos encontrados.
     pub count: usize,
-    /// Lista resumida de entornos.
     pub environments: Vec<EnvironmentSummaryOutput>,
 }
 
-/// Resumen de un entorno devuelto por `list_environments`.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct EnvironmentSummaryOutput {
-    /// UID completo del entorno.
     pub uid: String,
-    /// Nombre visible del entorno.
     pub name: String,
-    /// Fecha de última actualización en formato ISO 8601.
     pub updated_at: String,
 }
 
@@ -80,37 +69,29 @@ impl AsyncTool<PostmanServer> for ListEnvironmentsTool {
     }
 }
 
-/// Tool MCP que obtiene el detalle de un entorno, incluyendo todas sus variables.
+/// Tool que obtiene el detalle de un entorno incluyendo sus variables.
 pub struct GetEnvironmentTool;
 
-/// Parámetros de entrada para `get_environment`.
 #[derive(Debug, Deserialize, JsonSchema, Default)]
 pub struct GetEnvironmentInput {
     /// UID o ID del entorno a recuperar.
     pub environment_id: String,
 }
 
-/// Respuesta de `get_environment`.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct GetEnvironmentOutput {
-    /// Nombre del entorno.
     pub name: String,
-    /// ID interno del entorno.
     pub id: String,
-    /// Lista de variables definidas en el entorno.
     pub variables: Vec<EnvironmentVariableOutput>,
 }
 
-/// Variable de un entorno devuelta por `get_environment`.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct EnvironmentVariableOutput {
-    /// Nombre de la variable.
     pub key: String,
-    /// Valor actual de la variable.
     pub value: String,
     /// `true` si la variable está activa.
     pub enabled: bool,
-    /// Tipo de variable: `"default"` o `"secret"`.
+    /// Tipo: `"default"` o `"secret"`.
     pub variable_type: String,
 }
 
@@ -163,4 +144,3 @@ pub fn register_tools(router: ToolRouter<PostmanServer>) -> ToolRouter<PostmanSe
         .with_async_tool::<ListEnvironmentsTool>()
         .with_async_tool::<GetEnvironmentTool>()
 }
-

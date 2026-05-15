@@ -1,5 +1,3 @@
-//! # client::collections
-//!
 //! Operaciones CRUD sobre colecciones Postman y ejecución en cloud runner.
 
 use anyhow::Result;

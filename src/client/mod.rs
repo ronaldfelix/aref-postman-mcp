@@ -1,17 +1,4 @@
-//! # client
-//!
-//! Cliente HTTP modular para la [API REST de Postman](https://www.postman.com/postman/postman-public-workspace/).
-//!
-//! [`PostmanApiClient`] es el punto de entrada único. Cada dominio extiende el
-//! struct en su propio submódulo mediante bloques `impl` adicionales, lo que
-//! permite añadir nuevos dominios (mocks, monitors, workspaces…)
-//! | Módulo            | Operaciones                                                  |
-//! |-------------------|--------------------------------------------------------------|
-//! | [`http`]          | `send<T>` genérico + constante base URL                      |
-//! | [`collections`]   | list, get, create, update, delete, run                       |
-//! | [`requests`]      | create, update, delete (+ helper `collection_uuid`)          |
-//! | [`environments`]  | list, get, update variables de entorno                       |
-//! | [`variables`]     | variables globales + variables de colección                  |
+//! Cliente HTTP modular para la API REST de Postman. `PostmanApiClient` es el punto de entrada único.
 
 mod http;
 mod collections;
@@ -23,15 +10,9 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 
 /// URL base de la API REST de Postman.
-///
-/// Accesible a los submódulos a través de `super::POSTMAN_API_BASE`.
 pub(self) const POSTMAN_API_BASE: &str = "https://api.getpostman.com";
 
-/// Cliente HTTP para la API de Postman.
-///
-/// Construir con [`PostmanApiClient::new`], que lee la variable de entorno
-/// `POSTMAN_API_KEY`.  La instancia es barata de clonar (`Arc` interno de
-/// `reqwest::Client`).
+/// Cliente HTTP para la API de Postman. Construir con [`PostmanApiClient::new`] (lee `POSTMAN_API_KEY`).
 #[derive(Debug, Clone)]
 pub struct PostmanApiClient {
     pub(super) http: Client,
@@ -39,7 +20,7 @@ pub struct PostmanApiClient {
 }
 
 impl PostmanApiClient {
-    /// Expone el cliente HTTP interno para que los tools puedan realizar
+    /// Expone el cliente HTTP interno (sin API key) para realizar requests directos.
     pub fn http_client(&self) -> &Client {
         &self.http
     }

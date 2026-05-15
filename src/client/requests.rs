@@ -1,5 +1,3 @@
-//! # client::requests
-//!
 //! Operaciones CRUD sobre requests dentro de una colección Postman.
 
 use anyhow::Result;
@@ -7,9 +5,7 @@ use anyhow::Result;
 use super::{PostmanApiClient, POSTMAN_API_BASE};
 
 impl PostmanApiClient {
-    /// Crea un nuevo request dentro de una colección.
-    ///
-    /// # Arguments
+    /// Crea un nuevo request en la colección indicada, opcionalmente dentro de una carpeta.
     ///
     /// * `collection_id`  – UID de la colección destino.
     /// * `request_body`   – Payload JSON con la definición del request.
@@ -30,6 +26,10 @@ impl PostmanApiClient {
     }
 
     /// Reemplaza completamente un request existente dentro de una colección.
+    ///
+    /// * `collection_id`  – UID de la colección que contiene el request.
+    /// * `request_id`     – UID del request a reemplazar.
+    /// * `request_body`   – Payload JSON con la nueva definición.
     pub async fn update_request(
         &self,
         collection_id: &str,
@@ -48,6 +48,9 @@ impl PostmanApiClient {
     }
 
     /// Elimina permanentemente un request de una colección.
+    ///
+    /// * `collection_id`  – UID de la colección que contiene el request.
+    /// * `request_id`     – UID del request a eliminar.
     pub async fn delete_request(
         &self,
         collection_id: &str,
@@ -63,10 +66,7 @@ impl PostmanApiClient {
     }
 }
 
-/// Extrae el UUID puro de una colección a partir de su UID completo.
-///
-/// La API de Postman devuelve UIDs con el formato `{8hex}-{collection-uuid}`.
-/// Los endpoints de mutación de requests esperan únicamente el UUID de colección.
+/// Extrae el UUID puro de una colección desde su UID completo (`{8hex}-{uuid}`).
 fn collection_uuid(uid: &str) -> &str {
     if let Some(pos) = uid.find('-') {
         if pos == 8 && uid[..pos].chars().all(|c| c.is_ascii_hexdigit()) {

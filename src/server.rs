@@ -1,14 +1,4 @@
-//! # server
-//!
-//! Define [`PostmanServer`], el handler MCP que expone todos los tools
-//! ## Cómo agregar un nuevo dominio de tools
-//!
-//! 1. Crear el módulo en `tools/` con los structs de tool y una función
-//!    `pub fn register_tools(router: ToolRouter<PostmanServer>) -> ToolRouter<PostmanServer>`.
-//! 2. Añadir `pub mod nuevo_modulo;` en `tools/mod.rs`.
-//! 3. Llamar `tools::nuevo_modulo::register_tools(r)` en [`PostmanServer::tool_router`].
-//!
-//! `server.rs` no necesita conocer los structs internos de cada tool.
+//! Define [`PostmanServer`], el handler MCP que registra y despacha todos los tools.
 
 use std::future::Future;
 
@@ -23,10 +13,7 @@ use rmcp::{ErrorData, ServerHandler};
 use crate::client::PostmanApiClient;
 use crate::tools;
 
-/// Servidor MCP de Postman.
-///
-/// Mantiene una referencia al cliente HTTP de Postman y un [`ToolRouter`]
-/// que despacha las llamadas entrantes al tool correspondiente.
+/// Servidor MCP de Postman. Mantiene el cliente HTTP y el [`ToolRouter`] de despacho.
 pub struct PostmanServer {
     pub client: PostmanApiClient,
     tool_router: ToolRouter<Self>,
@@ -40,9 +27,6 @@ impl PostmanServer {
     }
 
     /// Construye el [`ToolRouter`] delegando el registro a cada módulo de tools.
-    ///
-    /// Cada módulo expone `register_tools(router) -> router` siguiendo el
-    /// patrón Open/Closed: agregar un nuevo dominio solo requiere una línea aquí.
     fn tool_router() -> ToolRouter<Self> {
         let r = ToolRouter::new();
         let r = tools::collections::register_tools(r);

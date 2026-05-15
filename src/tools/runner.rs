@@ -1,10 +1,5 @@
-//! # tools::runner
-//!
-//! Tools MCP de ejecución de colecciones Postman:
-//!
-//! - [`RunCollectionTool`] — usa el Cloud Runner de Postman (requiere plan Enterprise).
-//! - [`RunCollectionLocalTool`] — ejecuta la colección **localmente** sin API premium,
-//!   descargando la colección desde Postman API o leyendo un archivo `.json` exportado.
+//! Tools MCP de ejecución de colecciones: `run_collection` (Cloud Runner, requiere Enterprise)
+//! y `run_collection_local` (ejecución local sin plan premium).
 
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -80,24 +75,17 @@ impl AsyncTool<PostmanServer> for RunCollectionTool {
     }
 }
 
-/// Tool MCP que ejecuta todos los requests de una colección **localmente**,
-/// Fuentes de colección (mutuamente excluyentes, en orden de prioridad):
-/// 1. `collection_id`   — descarga la colección desde la API de Postman.
-/// 2. `collection_file` — lee un archivo `.json` exportado desde Postman.
-///
-/// El archivo `.json` puede ser en formato de API `{"collection":{...}}` o en
-/// formato de exportación directo `{"info":{...},"item":[...]}`.
+/// Tool que ejecuta todos los requests de una colección localmente (sin plan Enterprise).
+/// Acepta la colección por UID de Postman o por ruta a un archivo `.json` exportado.
 pub struct RunCollectionLocalTool;
 
 #[derive(Debug, Deserialize, JsonSchema, Default)]
 pub struct RunCollectionLocalInput {
-    /// UID de la colección en Postman. La colección se descarga y ejecuta localmente.
-    /// Usar este campo O `collection_file`, no ambos a la vez.
+    /// UID de la colección en Postman. Usar este campo O `collection_file`, no ambos.
     #[serde(default)]
     pub collection_id: Option<String>,
 
-    /// Ruta absoluta al archivo `.json` exportado desde Postman.
-    /// Soporta formato API `{"collection":{...}}` y formato de exportación `{"info":{...},"item":[...]}`.
+    /// Ruta absoluta al archivo `.json` exportado desde Postman (formato API o de exportación).
     #[serde(default)]
     pub collection_file: Option<String>,
 
@@ -105,11 +93,11 @@ pub struct RunCollectionLocalInput {
     #[serde(default)]
     pub environment_id: Option<String>,
 
-    /// Detener la ejecución al primer request con status no 2xx. Por defecto `false`.
+    /// Detiene la ejecución al primer request con status no 2xx. Por defecto `false`.
     #[serde(default)]
     pub stop_on_failure: Option<bool>,
 
-    /// Límite de caracteres del body de respuesta por request. Por defecto `2000`. `0` = sin límite.
+    /// Límite de chars del body por request. Por defecto `2000`; usa `0` para sin límite.
     #[serde(default)]
     pub body_limit: Option<usize>,
 }
@@ -117,17 +105,11 @@ pub struct RunCollectionLocalInput {
 /// Resumen de la ejecución local de toda la colección.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct RunCollectionLocalOutput {
-    /// Nombre de la colección ejecutada.
     pub collection_name: String,
-    /// Total de requests ejecutados.
     pub total: usize,
-    /// Requests con status 2xx.
     pub passed: usize,
-    /// Requests con status no 2xx o con error de red.
     pub failed: usize,
-    /// Tiempo total de ejecución en milisegundos.
     pub total_elapsed_ms: u128,
-    /// Resultados individuales de cada request.
     pub results: Vec<RequestRunResult>,
 }
 
@@ -143,7 +125,6 @@ pub struct RequestRunResult {
     pub passed: bool,
     pub response_body: String,
     pub body_truncated: bool,
-    /// `null` si no hubo error de red.
     pub error: Option<String>,
 }
 

@@ -1,16 +1,4 @@
-//! # tools::variables
-//!
-//! Tools MCP para gestión de variables locales (colección/entorno) y globales.
-//!
-//! | Tool                             | Scope      | Operación                                   |
-//! |----------------------------------|------------|---------------------------------------------|
-//! | [`SetEnvironmentVariableTool`]   | Entorno    | Crea o actualiza una variable               |
-//! | [`DeleteEnvironmentVariableTool`]| Entorno    | Elimina una variable por clave              |
-//! | [`SetCollectionVariableTool`]    | Colección  | Crea o actualiza una variable local         |
-//! | [`DeleteCollectionVariableTool`] | Colección  | Elimina una variable local por clave        |
-//! | [`ListGlobalVariablesTool`]      | Global     | Lista todas las variables globales          |
-//! | [`SetGlobalVariableTool`]        | Global     | Crea o actualiza una variable global        |
-//! | [`DeleteGlobalVariableTool`]     | Global     | Elimina una variable global por clave       |
+//! Tools MCP para gestión de variables de entorno, colección y globales.
 
 use std::borrow::Cow;
 
@@ -28,7 +16,7 @@ use crate::utils::errors::to_internal_err;
 pub struct VariableOutput {
     pub ok: bool,
     pub message: String,
-    /// Identificador del recurso afectado (environment UID, collection UID o `"globals"`).
+    /// UID del recurso afectado (environment, collection o `"globals"`).
     pub resource_id: String,
     pub key: String,
     /// Acción ejecutada: `"set"` o `"delete"`.
@@ -50,14 +38,14 @@ pub struct SetEnvironmentVariableTool;
 pub struct SetEnvironmentVariableInput {
     /// UID del entorno a modificar.
     pub environment_id: String,
-    /// Nombre de la variable (`{{key}}`).
+    /// Nombre de la variable (usado como `{{key}}`).
     pub key: String,
-    /// Nuevo valor.
+    /// Nuevo valor de la variable.
     pub value: String,
-    /// `"default"` o `"secret"`. Por defecto `"default"`.
+    /// Tipo: `"default"` o `"secret"`. Por defecto `"default"`.
     #[serde(default)]
     pub variable_type: Option<String>,
-    /// Activar/desactivar la variable. Por defecto `true`.
+    /// Activa o desactiva la variable. Por defecto `true`.
     #[serde(default)]
     pub enabled: Option<bool>,
 }
@@ -107,7 +95,7 @@ pub struct DeleteEnvironmentVariableTool;
 
 #[derive(Debug, Deserialize, JsonSchema, Default)]
 pub struct DeleteEnvironmentVariableInput {
-    /// UID del entorno.
+    /// UID del entorno que contiene la variable.
     pub environment_id: String,
     /// Clave de la variable a eliminar.
     pub key: String,
@@ -148,11 +136,11 @@ pub struct SetCollectionVariableTool;
 pub struct SetCollectionVariableInput {
     /// UID de la colección a modificar.
     pub collection_id: String,
-    /// Nombre de la variable (`{{key}}`).
+    /// Nombre de la variable (usado como `{{key}}`).
     pub key: String,
     /// Valor de la variable.
     pub value: String,
-    /// `"default"` o `"secret"`. Por defecto `"default"`.
+    /// Tipo: `"default"` o `"secret"`. Por defecto `"default"`.
     #[serde(default)]
     pub variable_type: Option<String>,
 }
@@ -252,7 +240,7 @@ pub struct GlobalVariableItem {
     pub key: String,
     pub value: String,
     pub enabled: bool,
-    /// `"default"` o `"secret"`.
+    /// Tipo: `"default"` o `"secret"`.
     pub variable_type: String,
 }
 
@@ -293,10 +281,10 @@ pub struct SetGlobalVariableInput {
     pub key: String,
     /// Valor de la variable.
     pub value: String,
-    /// `"default"` o `"secret"`. Por defecto `"default"`.
+    /// Tipo: `"default"` o `"secret"`. Por defecto `"default"`.
     #[serde(default)]
     pub variable_type: Option<String>,
-    /// Activar/desactivar. Por defecto `true`.
+    /// Activa o desactiva la variable. Por defecto `true`.
     #[serde(default)]
     pub enabled: Option<bool>,
 }

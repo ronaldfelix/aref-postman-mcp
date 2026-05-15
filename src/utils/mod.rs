@@ -1,13 +1,4 @@
-//! # utils
-//!
-//! Utilidades reutilizables compartidas entre los distintos módulos del servidor.
-//!
-//! | Módulo    | Contenido                                                        |
-//! |-----------|------------------------------------------------------------------|
-//! | [`errors`]| Helper `to_internal_err` para convertir `anyhow::Error` en MCP  |
-//! | [`vars`]  | `resolve_vars` — interpolación de variables `{{key}}`           |
-//! | [`auth`]  | `apply_auth` — construcción de cabeceras de autenticación        |
-//! | [`items`] | Helpers para árboles de [`CollectionItem`]                       |
+//! Utilidades reutilizables: errores MCP, interpolación de variables, autenticación e helpers de items.
 
 pub mod auth;
 pub mod errors;

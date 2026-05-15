@@ -1,7 +1,4 @@
-//! # tools::requests
-//!
-//! Tools MCP para operaciones CRUD sobre requests dentro de una colección Postman:
-//! [`CreateRequestTool`], [`UpdateRequestTool`] y [`DeleteRequestTool`].
+//! Tools MCP para operaciones CRUD sobre requests dentro de una colección Postman.
 
 use std::borrow::Cow;
 

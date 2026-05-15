@@ -1,22 +1,17 @@
-//! # tools::common
-//!
 //! Tipos y helpers compartidos por todos los tools de escritura (CRUD).
 
 use rmcp::schemars;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-/// Respuesta genérica para todas las operaciones de escritura.
-///
-/// Solo expone los campos útiles para el LLM, descartando metadatos internos
-/// de Postman (`lastRevision`, `owner`, `helperAttributes`).
+/// Respuesta genérica para operaciones de escritura. Descarta metadatos internos de Postman.
 #[derive(Debug, Serialize, JsonSchema)]
 pub struct CrudOutput {
     /// `true` si la operación fue exitosa.
     pub ok: bool,
     /// Mensaje de resultado (`"OK"` en caso de éxito).
     pub message: String,
-    /// Identificador del recurso creado o modificado.
+    /// ID del recurso creado o modificado.
     pub id: String,
     /// Nombre del recurso (si aplica).
     pub name: String,
@@ -25,7 +20,7 @@ pub struct CrudOutput {
 }
 
 impl CrudOutput {
-    /// Extrae solo los campos relevantes de la respuesta JSON de Postman.
+    /// Extrae los campos relevantes (id, name, action) de la respuesta JSON de Postman.
     pub fn success(data: serde_json::Value) -> Self {
         let id = data
             .pointer("/collection/id")
@@ -68,10 +63,16 @@ pub struct HeaderEntry {
 }
 
 /// Construye el payload JSON de un request para la API REST de Postman v1.
+/// Los headers se codifican como string `"Key: Value\n"` (formato plano requerido por la API).
 ///
-/// La API v1 (`api.getpostman.com/collections/{id}/requests`) usa un formato
-/// **plano** donde los headers van en el campo `"headers"` (plural) como un
-/// **string** con líneas `"Key: Value\n"`.
+/// * `name`           – Nombre del request.
+/// * `method`         – Método HTTP en mayúsculas.
+/// * `url`            – URL completa.
+/// * `headers`        – Headers HTTP opcionales.
+/// * `body_mode`      – Modo del body: `"raw"`, `"urlencoded"`, `"formdata"` o `None`.
+/// * `body_raw`       – Contenido del body en modo `"raw"`.
+/// * `body_language`  – Lenguaje del body raw: `"json"`, `"xml"`, `"text"`.
+/// * `description`    – Descripción opcional del request.
 pub fn build_request_payload(
     name: &str,
     method: &str,
@@ -118,4 +119,3 @@ pub fn build_request_payload(
 
     payload
 }
-

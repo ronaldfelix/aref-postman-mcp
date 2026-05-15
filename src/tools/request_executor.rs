@@ -1,10 +1,4 @@
-﻿//! # tools::request_executor
-//!
-//! Tool MCP [`ExecuteRequestTool`] que localiza un request en una colección,
-//! resuelve variables, aplica autenticación y lo ejecuta contra el servidor real.
-//!
-//! La lógica HTTP vive en [`crate::utils::executor::execute_item`],
-//! compartida con [`RunCollectionLocalTool`].
+﻿//! Tool MCP `execute_request`: localiza un request en una colección, resuelve variables, aplica auth y lo ejecuta.
 
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -28,10 +22,10 @@ pub struct ExecuteRequestInput {
     pub request_name: String,
     #[serde(default)]
     pub environment_id: Option<String>,
-    /// Si true, devuelve TODOS los response headers. Por defecto false.
+    /// Si `true`, devuelve todos los response headers (por defecto solo los clave).
     #[serde(default)]
     pub full_headers: Option<bool>,
-    /// Límite de chars del body. Por defecto 4000. Usa 0 para sin límite.
+    /// Límite de chars del body de respuesta. Por defecto 4000; usa 0 para sin límite.
     #[serde(default)]
     pub body_limit: Option<usize>,
 }

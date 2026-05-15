@@ -1,7 +1,4 @@
-//! # tools::collections
-//!
-//! Tools MCP para todas las operaciones sobre colecciones Postman:
-//! lectura (`list`, `get`) y escritura (`create`, `update`, `delete`).
+//! Tools MCP para operaciones CRUD sobre colecciones Postman (list, get, create, update, delete).
 
 use std::borrow::Cow;
 
@@ -227,10 +224,7 @@ impl AsyncTool<PostmanServer> for DeleteCollectionTool {
     }
 }
 
-/// Registra todos los tools de este módulo en el [`ToolRouter`].
-///
-/// Para añadir un nuevo tool de colecciones basta con agregar una línea aquí;
-/// `server.rs` no necesita cambios.
+/// Registra todos los tools de colecciones en el [`ToolRouter`].
 pub fn register_tools(router: ToolRouter<PostmanServer>) -> ToolRouter<PostmanServer> {
     router
         .with_async_tool::<ListCollectionsTool>()

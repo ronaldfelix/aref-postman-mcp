@@ -55,11 +55,7 @@ async fn main() -> anyhow::Result<()> {
     std::process::exit(0);
 }
 
-/// Escucha señales de cierre del proceso.
-///
-/// En todas las plataformas espera `Ctrl+C`. En sistemas Unix también
-/// intercepta `SIGTERM`, lo que permite que orquestadores de contenedores
-/// (Docker, Kubernetes) terminen el proceso de forma limpia
+/// Espera `Ctrl+C` (todas las plataformas) o `SIGTERM` (Unix).
 async fn shutdown_signal() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
